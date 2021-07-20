@@ -1,0 +1,17 @@
+{
+"compilerOptions": {
+    "target": "ES5",                               
+    "module": "commonjs",                                                      
+    "moduleResolution": "node",                 
+    "baseUrl": "./src",               
+    "esModuleInterop": true,                       
+    "skipLibCheck": true,                           
+    "forceConsistentCasingInFileNames": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "typeRoots": [
+        "@types",
+        "./node_modules/@types",
+    ] 
+}
+}
