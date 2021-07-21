@@ -1,2 +1,2 @@
-export * from './db';
+export * from './dbConfig';
 export * from './amqpConnect';

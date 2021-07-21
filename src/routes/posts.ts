@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
 import { amqpConnect } from "config";
-import { Post } from "entity/Post";
-import { getRepository } from "typeorm";
+import Post from "models/Post";
+
 
 const storage = multer.diskStorage({
   destination: function (req: Request, file: Express.Multer.File,
@@ -44,15 +44,11 @@ amqpConnect({ url: process.env.CLOUDAMQP_URL })
     
     channel.consume('note_created', async (message) => {
       const eventPost = JSON.parse(message.content.toString());
-      console.log(eventPost.result);
-      console.log(eventPost.filePath);
-      console.log(eventPost.result.title)
-      console.log(eventPost.filePath.fieldname)
-      console.log(eventPost.filePath.path)
-
+      console.log(eventPost);
+      
       upload.fields([eventPost.filePath]);
       
-      const postRepository = getRepository(Post);
+      // const postRepository = getRepository(Post);
       const postData: {
         originId: number;
         ownerUserName: string;
@@ -70,8 +66,8 @@ amqpConnect({ url: process.env.CLOUDAMQP_URL })
         tags: eventPost.result.tags,
         content: eventPost.result.content,
       }
-      
-      await postRepository.save(postData);
+      const post = new Post(postData);
+      await post.save();
     }, {noAck:true})
   });
 
@@ -82,11 +78,18 @@ amqpConnect({ url: process.env.CLOUDAMQP_URL })
  * @access authenticated 
  */
 
-
 router.get('/', async (req: Request, res: Response) => {
-  const postRepository = getRepository(Post);
-  const result = await postRepository.find();
-  res.status(200).json(result);
+  Post.find()
+    .exec()
+    .then((posts) => {
+      return res.status(200).json(posts);
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        message: error.message,
+        error
+      });
+    });
 })
 
 export default router;
