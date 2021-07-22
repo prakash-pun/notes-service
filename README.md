@@ -1,5 +1,5 @@
 # notes-service
-## note service app with postgres db
+## note service app with mongoose amqp (Rabbitmq)
 
 ## create `.env` in root folder
 

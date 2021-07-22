@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 const PostSchema: Schema = new Schema(
   {
     originId: {
-      type: Number,
+      type: String,
       required: true
     },
     ownerUserName: {

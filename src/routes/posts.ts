@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import multer from "multer";
 import { amqpConnect } from "config";
 import Post from "models/Post";
+import { StringifyOptions } from "querystring";
 
 
 const storage = multer.diskStorage({
@@ -41,6 +42,7 @@ amqpConnect({ url: process.env.CLOUDAMQP_URL })
     channel = ch;
 
     channel.assertQueue('note_created', { durable: false })
+    channel.assertQueue('note_deleted', { durable: false })
     
     channel.consume('note_created', async (message) => {
       const eventPost = JSON.parse(message.content.toString());
@@ -50,7 +52,7 @@ amqpConnect({ url: process.env.CLOUDAMQP_URL })
       
       // const postRepository = getRepository(Post);
       const postData: {
-        originId: number;
+        originId: StringifyOptions;
         ownerUserName: string;
         title: string;
         subTitle: string;
@@ -58,7 +60,7 @@ amqpConnect({ url: process.env.CLOUDAMQP_URL })
         tags: string;
         content: string;
       } = {
-        originId: parseInt(eventPost.result.id),
+        originId: eventPost.result._id,
         ownerUserName: eventPost.result.owner.userName,
         title: eventPost.result.title,
         subTitle: eventPost.result.subTitle,
@@ -68,7 +70,15 @@ amqpConnect({ url: process.env.CLOUDAMQP_URL })
       }
       const post = new Post(postData);
       await post.save();
-    }, {noAck:true})
+    }, { noAck: true })
+    
+    channel.consume('note_deleted', async (message) => {
+      const eventPost = JSON.parse(message.content.toString());
+      console.log(eventPost);
+      const post = await Post.findOne({ originId: eventPost });
+      post.delete();
+      console.log("post deleted");
+    }, { noAck: true });
   });
 
 
