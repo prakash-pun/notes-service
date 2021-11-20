@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import auth from './auth';
-import post from './posts';
+import { Router } from "express";
+import auth from "./auth";
+import post from "./posts";
 
 const routes = Router();
 

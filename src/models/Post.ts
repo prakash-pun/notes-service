@@ -4,7 +4,7 @@ const PostSchema: Schema = new Schema(
   {
     originId: {
       type: String,
-      required: true
+      required: true,
     },
     ownerUserName: {
       type: String,
@@ -12,7 +12,7 @@ const PostSchema: Schema = new Schema(
     },
     title: {
       type: String,
-      required: true
+      required: true,
     },
     subTitle: {
       type: String,
@@ -28,11 +28,11 @@ const PostSchema: Schema = new Schema(
     content: {
       type: String,
       required: true,
-    }
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-export default model("Post", PostSchema)
+export default model("Post", PostSchema);
